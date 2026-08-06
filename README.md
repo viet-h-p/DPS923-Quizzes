@@ -2,3 +2,4 @@
 ## Technology
 - Xcode 26
 - SwiftUI
+- CoreData
