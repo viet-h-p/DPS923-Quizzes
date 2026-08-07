@@ -45,7 +45,7 @@ struct AddNewQuizView: View {
             } // Form Ends
             .navigationTitle("Add New Quiz")
             .navigationBarItems(trailing: Button("Add") {
-                if self.quizzesController.addQuiz(quizTitle: self.title) {
+                if self.quizzesController.addQuiz(quizTitle: self.title, score: 0, maxScore: 10) {
                     self.quizzesController.fetchAllQuizzes()
                     dismiss()
                 } else {

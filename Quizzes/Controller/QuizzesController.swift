@@ -58,14 +58,14 @@ class QuizzesController {
         }
     }
     
-    func addQuiz(quizTitle: String) -> Bool {
+    func addQuiz(quizTitle: String, score: Int, maxScore: Int) -> Bool {
         
         let newQuiz = NSEntityDescription.insertNewObject(forEntityName: ENTITY_QUIZ, into: self.viewContext) as! Quiz
         newQuiz.id = UUID()
         newQuiz.title = quizTitle
         newQuiz.dateTaken = Date()
-        newQuiz.maxScore = 10
-        newQuiz.score = 0
+        newQuiz.maxScore = Int16(maxScore)
+        newQuiz.score = Int16(score)
         
         return saveContext()
     }
