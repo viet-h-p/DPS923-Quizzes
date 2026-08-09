@@ -13,8 +13,18 @@ struct QuizzesApp: App {
 
     var body: some Scene {
         WindowGroup {
-            QuizzesHistoryView()
-                .environment(quizzesController)
+            TabView {
+                HomeView()
+                    .tabItem {
+                        Label("Home", systemImage: "house")
+                    }
+
+                QuizzesHistoryView()
+                    .tabItem {
+                        Label("History", systemImage: "clock")
+                    }
+            }
+            .environment(quizzesController)
         }
     }
 }

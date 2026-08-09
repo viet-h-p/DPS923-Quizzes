@@ -22,7 +22,14 @@ enum TriviaAPIError: Error, LocalizedError {
         case .noResults:
             return "The API returned no questions."
         case .apiError(let code):
-            return "The API returned an error (response_code: \(code))."
+            switch code {
+            case 1:
+                return "Not enough questions available for these settings. Try fewer questions or a different difficulty."
+            case 5:
+                return "Too many requests. Please wait a few seconds and try again."
+            default:
+                return "The API returned an error (response_code: \(code))."
+            }
         }
     }
 }
