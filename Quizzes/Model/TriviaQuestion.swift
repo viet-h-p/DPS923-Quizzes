@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreData
 
 // Top-level response from the Open Trivia Database API
 // https://opentdb.com/api.php
@@ -51,6 +52,32 @@ struct TriviaQuestion: Codable, Identifiable {
         self.question = try container.decode(String.self, forKey: .question).percentDecoded
         self.correctAnswer = try container.decode(String.self, forKey: .correctAnswer).percentDecoded
         self.incorrectAnswers = try container.decode([String].self, forKey: .incorrectAnswers).map { $0.percentDecoded }
+    }
+}
+
+extension TriviaQuestion: ManagedObjectConvertible {
+    func toManagedObject(in context: NSManagedObjectContext) -> Question? {
+        guard
+            let questionEntity = NSEntityDescription.entity(forEntityName: "Question", in: context),
+            let incorrectAnswerEntity = NSEntityDescription.entity(forEntityName: "IncorrectAnswer", in: context)
+        else { return nil }
+        
+        let question = Question(entity: questionEntity, insertInto: context)
+        question.id = self.id
+        question.type = self.type
+        question.difficulty = self.difficulty
+        question.category = self.category
+        question.title = self.question
+        question.correctAnswer = self.correctAnswer
+
+        self.incorrectAnswers.forEach { answer in
+            let incorrectAnswer = IncorrectAnswer(entity: incorrectAnswerEntity, insertInto: context)
+            incorrectAnswer.answer = answer
+            incorrectAnswer.question = question
+            question.addToIncorrectAnswers(incorrectAnswer)
+        }
+        
+        return question
     }
 }
 
