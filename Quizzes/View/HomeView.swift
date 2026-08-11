@@ -6,10 +6,15 @@
 //
 
 import SwiftUI
+import CoreData
 
 // Home / Quiz Setup screen: choose the number of questions, category,
 // and difficulty, then fetch questions from the API and start the quiz.
 struct HomeView: View {
+    
+    private let viewContext = PersistanceController.shared.container.viewContext
+    
+    @Environment(QuizzesController.self) var quizzesController
 
     @State private var quizViewModel = QuizViewModel()
 
@@ -82,6 +87,9 @@ struct HomeView: View {
             } message: {
                 Text(self.alertMessage)
             }
+            .onAppear {
+                self.quizViewModel.resetQuiz()
+            }
         } // NavigationStack Ends
     }
 
@@ -90,14 +98,21 @@ struct HomeView: View {
 
         Task {
             do {
-                let questions = try await TriviaAPIService.shared.fetchQuestions(
+                let triviaQuestions = try await TriviaAPIService.shared.fetchQuestions(
                     amount: self.numberOfQuestions,
                     category: self.selectedCategory.apiID,
                     difficulty: self.selectedDifficulty.apiValue
                 )
+                
+                let questions = triviaQuestions.map { $0.toManagedObject(in: viewContext) }
 
-                self.quizViewModel.startQuiz(questions: questions)
-                self.showQuiz = true
+                if let newQuiz = self.quizzesController.createQuiz(category: self.selectedCategory.rawValue, difficulty: self.selectedDifficulty.rawValue, questions: questions) {
+                    self.quizViewModel.startQuiz(quiz: newQuiz, questions: triviaQuestions)
+                    self.showQuiz = true
+                } else {
+                    self.alertMessage = "Failed to add a quiz to CoreData."
+                    self.showAlert = true
+                }
             } catch {
                 self.alertMessage = error.localizedDescription
                 self.showAlert = true

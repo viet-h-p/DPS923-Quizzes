@@ -2,7 +2,7 @@
 //  Quiz+CoreDataProperties.swift
 //  Quizzes
 //
-//  Created by Pham Hoang Viet on 05-08-2026.
+//  Created by Pham Hoang Viet on 10-08-2026.
 //
 //
 
@@ -19,11 +19,11 @@ extension Quiz {
     }
 
     @NSManaged public var id: UUID?
-    @NSManaged public var maxScore: Int16
-    @NSManaged public var score: Int16
     @NSManaged public var title: String?
-    @NSManaged public var dateTaken: Date?
+    @NSManaged public var difficulty: String?
+    @NSManaged public var category: String?
     @NSManaged public var questions: NSSet?
+    @NSManaged public var attempts: NSSet?
 
 }
 
@@ -41,6 +41,23 @@ extension Quiz {
 
     @objc(removeQuestions:)
     @NSManaged public func removeFromQuestions(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for attempts
+extension Quiz {
+
+    @objc(addAttemptsObject:)
+    @NSManaged public func addToAttempts(_ value: QuizAttempt)
+
+    @objc(removeAttemptsObject:)
+    @NSManaged public func removeFromAttempts(_ value: QuizAttempt)
+
+    @objc(addAttempts:)
+    @NSManaged public func addToAttempts(_ values: NSSet)
+
+    @objc(removeAttempts:)
+    @NSManaged public func removeFromAttempts(_ values: NSSet)
 
 }
 

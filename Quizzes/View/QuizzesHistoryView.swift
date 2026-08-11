@@ -6,49 +6,41 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct QuizzesHistoryView: View {
     @Environment(QuizzesController.self) var quizzesController
-    
-    @State private var showAddQuiz: Bool = false
     
     @State private var showAlert = false
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
     
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(self.quizzesController.quizzes) { quiz in
-                    NavigationLink(destination: QuizContentView(quiz: quiz)) {
-                        HStack {
-                            Text(quiz.title ?? "Unknown")
-                                .font(.headline)
-                            Spacer()
-                            Text("Taken on \(quiz.dateTaken ?? Date(), formatter: dateFormatter)")
-                        }
-                    }
+            if self.quizzesController.quizzes.isEmpty {
+                VStack {
+                    Text("No Quiz found!")
                 }
-                .onDelete(perform: deleteItems)
-            } // List Ends
-            .navigationTitle("Quizzes")
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarItems(trailing: Button("Add Quiz") {
-                self.showAddQuiz.toggle()
-            })
-            .alert(isPresented: $showAlert) {
-                Alert(
-                    title: Text("\(self.alertTitle)"),
-                message: Text("\(self.alertMessage)"),
-                    dismissButton: .default(Text("Ok")) {
-                        dismiss()
+            } else {
+                List {
+                    ForEach(self.quizzesController.quizzes) { quiz in
+                        QuizRow(quiz: quiz)
                     }
-                )
-            } // Alert Ends
-            .sheet(isPresented: $showAddQuiz) {
-                AddNewQuizView()
+                    .onDelete(perform: deleteItems)
+                }
+                .navigationTitle("My Quizzes")
+                .navigationBarTitleDisplayMode(.inline)
+                .alert(isPresented: $showAlert) {
+                    Alert(
+                        title: Text("\(self.alertTitle)"),
+                        message: Text("\(self.alertMessage)"),
+                        dismissButton: .default(Text("Ok")) {
+                            dismiss()
+                        }
+                    )
+                } // Alert Ends
             }
         } // NavigationStack Ends
         .onAppear() {
@@ -72,10 +64,3 @@ struct QuizzesHistoryView: View {
         }
     }
 }
-
-private let dateFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()

@@ -1,17 +1,53 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24512" systemVersion="25F84" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="IncorrectAnswer" representedClassName="IncorrectAnswer" syncable="YES">
+        <attribute name="answer" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="question" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Question" inverseName="incorrectAnswers" inverseEntity="Question"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
     <entity name="Question" representedClassName="Question" syncable="YES">
-        <attribute name="answerCorrect" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="category" attributeType="String"/>
+        <attribute name="correctAnswer" attributeType="String"/>
+        <attribute name="difficulty" attributeType="String"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="title" attributeType="String"/>
+        <attribute name="type" attributeType="String"/>
+        <relationship name="incorrectAnswers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="IncorrectAnswer" inverseName="question" inverseEntity="IncorrectAnswer"/>
         <relationship name="quiz" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Quiz" inverseName="questions" inverseEntity="Quiz"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
     </entity>
     <entity name="Quiz" representedClassName="Quiz" syncable="YES">
-        <attribute name="dateTaken" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="category" attributeType="String"/>
+        <attribute name="difficulty" attributeType="String"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="maxScore" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="score" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="title" attributeType="String"/>
+        <relationship name="attempts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="QuizAttempt" inverseName="quiz" inverseEntity="QuizAttempt"/>
         <relationship name="questions" toMany="YES" deletionRule="Nullify" destinationEntity="Question" inverseName="quiz" inverseEntity="Question"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="QuizAttempt" representedClassName="QuizAttempt" syncable="YES">
+        <attribute name="dateTaken" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="score" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="totalQuestions" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="quiz" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Quiz" inverseName="attempts" inverseEntity="Quiz"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
     </entity>
 </model>

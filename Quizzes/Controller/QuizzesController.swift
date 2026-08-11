@@ -13,10 +13,11 @@ class QuizzesController {
     private let viewContext = PersistanceController.shared.container.viewContext
     
     var quizzes: [Quiz] = []
-    var questions: [Question] = []
     
     private let ENTITY_QUIZ = "Quiz"
+    private let ENTITY_QUIZ_ATTEMPT = "QuizAttempt"
     private let ENTITY_QUESTION = "Question"
+    private let ENTITY_INCORRECT_ANSWER = "IncorrectAnswer"
     
     private static var shared: QuizzesController?
     
@@ -45,6 +46,7 @@ class QuizzesController {
     }
     
     func fetchAllQuizzes() {
+        self.quizzes.removeAll()
         let request: NSFetchRequest<Quiz> = Quiz.fetchRequest()
         
         // SELECT * FROM Quiz ORDER BY name ASC
@@ -58,42 +60,32 @@ class QuizzesController {
         }
     }
     
-    func addQuiz(quizTitle: String, score: Int, maxScore: Int) -> Bool {
-        
+    func createQuiz(category: String, difficulty: String, questions: [Question?]) -> Quiz? {
         let newQuiz = NSEntityDescription.insertNewObject(forEntityName: ENTITY_QUIZ, into: self.viewContext) as! Quiz
-        newQuiz.id = UUID()
-        newQuiz.title = quizTitle
-        newQuiz.dateTaken = Date()
-        newQuiz.maxScore = Int16(maxScore)
-        newQuiz.score = Int16(score)
+        let quizId = UUID()
+        newQuiz.id = quizId
+        newQuiz.title = "Quiz"
+        newQuiz.category = category
+        newQuiz.difficulty = difficulty
         
-        return saveContext()
-    }
-    
-    func fetchAllQuestions(of quiz: Quiz) {
-        let request: NSFetchRequest<Question> = Question.fetchRequest()
+        questions.forEach { question in
+            newQuiz.addToQuestions(question!)
+        }
         
-        // SELECT * FROM Question WHERE quiz = quiz
-        request.predicate = NSPredicate(format: "quiz == %@", quiz)
-        
-//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-        
-        do {
-            self.questions = try self.viewContext.fetch(request)
-            print("\(self.questions.count) questions found...")
-        } catch {
-            print("Unable to fetch questions... \(error.localizedDescription)")
+        if saveContext() {
+            return newQuiz
+        } else {
+            return nil
         }
     }
     
-    func addQuestion(quiz: Quiz, questionTitle: String) -> Bool {
-        
-        let newQuestion = NSEntityDescription.insertNewObject(forEntityName: ENTITY_QUESTION, into: self.viewContext) as! Question
-        newQuestion.id = UUID()
-        newQuestion.title = questionTitle
-        newQuestion.answerCorrect = false
-        newQuestion.quiz = quiz
-        
+    func addQuizAttempt(quiz: Quiz, score: Int, totalQuestions: Int) -> Bool {
+        let attempt = NSEntityDescription.insertNewObject(forEntityName: ENTITY_QUIZ_ATTEMPT, into: self.viewContext) as! QuizAttempt
+        attempt.id = UUID()
+        attempt.dateTaken = Date()
+        attempt.score = Int16(score)
+        attempt.totalQuestions = Int16(totalQuestions)
+        attempt.quiz = quiz
         return saveContext()
     }
     

@@ -11,6 +11,8 @@ import SwiftUI
 // loaded with fetched questions (startQuiz has been called), so the real
 // quiz UI only needs to be built inside this view's body.
 struct QuizView: View {
+    
+    @Environment(QuizzesController.self) var quizzesController
 
     var quizViewModel: QuizViewModel
     
@@ -57,6 +59,7 @@ struct QuizView: View {
                     
                     if(!movedToNextQuestion
                        && self.quizViewModel.isQuizCompleted) {
+                        _ = self.quizzesController.addQuizAttempt(quiz: self.quizViewModel.currentQuiz!, score: self.quizViewModel.score, totalQuestions: self.quizViewModel.questions.count)
                         self.showResult = true
                     }
                 } label: {

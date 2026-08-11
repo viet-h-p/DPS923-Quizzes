@@ -18,6 +18,9 @@ class QuizViewModel{
     var hasAnswered: Bool = false
     var isQuizCompleted: Bool = false
     
+    // CoreData
+    var currentQuiz: Quiz?
+    
     // computed value
     
     // Current Question
@@ -79,6 +82,15 @@ class QuizViewModel{
         self.isQuizCompleted = false
         
         self.prepareAnswers()
+    }
+    
+    func startQuiz(quiz: Quiz, questions: [TriviaQuestion]) {
+        currentQuiz = quiz
+        startQuiz(questions: questions)
+    }
+    
+    func resetQuiz() {
+        self.currentQuiz = nil
     }
     
     func prepareAnswers() {
