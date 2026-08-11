@@ -69,5 +69,6 @@ struct ResultView: View {
         .padding()
         .navigationTitle("Results")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
     }
 }
